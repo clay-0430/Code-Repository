@@ -49,5 +49,10 @@ public class DistributionConfigVO {
 
     private String cashSettlementType;
 
+    public static void main(String[] args) {
+        DistributionConfigVO vo = new DistributionConfigVO();
+        vo.getApplyAuditWay();
+    }
+
 
 }

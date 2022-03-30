@@ -1,0 +1,5 @@
+@startuml
+title  pos-coupon-list
+    bifrost_youzan_gateway ->  retail_ump:  com.youzan.retail.ump.biz.api.service.PromocardService.findCustomerPromocards
+    retail_ump -> ump_assert : com.youzan.ump.asset.api.query.BuyerCouponQueryService.getBuyerCouponDetailList
+@endum

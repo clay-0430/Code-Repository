@@ -1,0 +1,74 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor 商家管理员 as admin
+participant ItemOperateService as ItemOperateService
+participant BizOrchestrationEngine as BizOrchestrationEngine
+participant IdentityService as IdentityService
+participant RuleService as RuleService
+participant InitChain as InitChain
+participant ParamValidatorChain as ParamValidatorChain
+participant BizValidatorChain as BizValidatorChain
+participant BizAssemblyChain as BizAssemblyChain
+participant SellItemAssembly as SellItemAssembly #blue
+participant BizProcessorChain as BizProcessorChain
+participant PostBizProcessorChain as PostBizProcessorChain
+
+autonumber
+admin -> ItemOperateService: 提交商品库商品创建请求
+activate ItemOperateService
+ItemOperateService -> BizOrchestrationEngine: 流程编排并处理
+activate BizOrchestrationEngine
+BizOrchestrationEngine [#blue]-> IdentityService: 解析业务流程ID \n identityService.getBusinessIdentity
+note right: 新建：31_999999999999_0_0 \n编辑：32_999999999999_0_0
+activate IdentityService #blue
+IdentityService [#blue]--> BizOrchestrationEngine: 返回业务流程ID
+deactivate IdentityService
+BizOrchestrationEngine [#blue]-> RuleService: 通过业务流程获取业务规则组件 \n ruleService.parseRule
+note right: ConfigEntity配置类里组件规则ID为71
+activate RuleService #blue
+RuleService [#blue]--> BizOrchestrationEngine: 返回业务规则组件
+deactivate RuleService
+BizOrchestrationEngine -> InitChain: 开始业务流程处理
+activate InitChain
+InitChain -> ParamValidatorChain: 参数校验流程处理
+activate ParamValidatorChain
+ParamValidatorChain -> ParamValidatorChain: 商品编辑ID非空校验 \n updateParamSpuIdValidator
+ParamValidatorChain -> ParamValidatorChain: 编码条码重复校验 \n ProductGoodsNoValidator
+ParamValidatorChain -> ParamValidatorChain: 多规格信息校验 \n StockParamValidator
+ParamValidatorChain --> InitChain:
+deactivate ParamValidatorChain
+InitChain -> BizValidatorChain: 业务校验流程开始
+activate BizValidatorChain
+BizValidatorChain -> BizValidatorChain: 零售商品业务校验 \n ProductBizValidator
+BizValidatorChain --> InitChain:
+deactivate BizValidatorChain
+InitChain -> BizAssemblyChain: 组装参数流程开始
+activate BizAssemblyChain
+BizAssemblyChain [#blue]-> SellItemAssembly: 根据商品库商品信息组装门店和渠道商品创建参数
+note right: 旺小店默认发布到门店和网店，需要后端根据商品库商品信息进行构建
+activate SellItemAssembly #blue
+SellItemAssembly [#blue]-> SellItemAssembly: 门店商品创建信息组装
+SellItemAssembly [#blue]-> SellItemAssembly: 网店商品创建信息组装
+SellItemAssembly [#blue]--> BizAssemblyChain:
+deactivate SellItemAssembly
+BizAssemblyChain -> BizAssemblyChain: 组装商品库商品创建请求参数 \n ItemEditAssembly
+BizAssemblyChain --> InitChain:
+deactivate BizAssemblyChain
+InitChain -> BizProcessorChain: 业务流程处理开始
+activate BizProcessorChain
+BizProcessorChain -> BizProcessorChain: 创建商品库商品、网店商品、门店商品 \n ProductSaveComponent
+BizProcessorChain --> InitChain:
+deactivate BizProcessorChain
+InitChain -> PostBizProcessorChain: 业务后置流程处理开始
+activate PostBizProcessorChain
+PostBizProcessorChain -> PostBizProcessorChain: 保存网店商品和门店商品的关联关系 \n GoodsRelationAddPostHandle
+PostBizProcessorChain --> InitChain:
+deactivate PostBizProcessorChain
+InitChain --> BizOrchestrationEngine:
+deactivate InitChain
+BizOrchestrationEngine --> ItemOperateService:
+deactivate BizOrchestrationEngine
+ItemOperateService --> admin:
+deactivate ItemOperateService
+@enduml

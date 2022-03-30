@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor 买家 as admin
+participant ph_front_buyer as ph_front_buyer
+participant ph_ump as ph_ump
+participant send_coupon as send_coupon #blue
+
+autonumber
+admin -> ph_front_buyer: 订单支付完成后
+activate ph_front_buyer
+ph_front_buyer -> ph_ump:shopId、\n userId
+activate ph_ump
+ph_ump -> ph_ump: 获取店铺推广券
+ph_ump -> ph_ump: 判断用户是否授权
+alt 发券流程:复用优惠券发放逻辑 \n1、获取券详情 \n2、批量发送优惠券 \n3、批量获取同步微信卡包凭证
+activate send_coupon #blue
+ph_ump -> send_coupon:
+end
+send_coupon --> ph_ump: 发券结果、同步微信卡包凭证
+ph_ump -> ph_front_buyer: result
+ph_front_buyer --> admin: result
+@enduml

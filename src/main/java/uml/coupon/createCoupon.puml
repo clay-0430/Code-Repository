@@ -1,0 +1,29 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor 商家 as admin
+participant ph_front_seller as ph_front_seller
+participant ph_ump as ph_ump
+participant ump_voucher_front as ump_voucher_front
+participant NSQ as NSQ
+participant DTS as DTS
+participant ph_job as ph_job
+
+autonumber
+admin -> ph_front_seller: 创建券包活动
+activate ph_front_seller
+ph_front_seller -> ph_ump: 活动配置信息、 \n 子活动信息subCouponActivityList
+activate ph_ump
+alt 创建商品
+ph_ump -> ph_ump: 判断入参，单个创建or批量创建
+ph_ump -> ump_voucher_front: 中台能力创建优惠券
+ump_voucher_front --> ph_ump: 券活动id
+ph_ump -> ph_ump: 普惠活动落库
+end
+ph_ump -> ph_ump: 批量更新活动，\n标志主活动和子活动的映射关系
+ph_ump -> NSQ: 券包创建消息(组装活动数据)
+ph_ump -> ph_front_seller: activityId
+NSQ -> DTS:
+DTS  [#blue]-> ph_job: sendCouponMsg
+ph_front_seller -> admin: activityId
+@enduml

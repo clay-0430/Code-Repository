@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor 买家 as admin
+participant ph_front_buyer as ph_front_buyer
+participant ph_ump as ph_ump
+participant ump_voucher_core as ump_voucher_core
+participant TSP as TSP
+participant NSQ as NSQ
+participant DTS as DTS
+participant ph_job as ph_job
+
+autonumber
+admin -> ph_front_buyer: 领取券
+activate ph_front_buyer
+ph_front_buyer -> ph_ump:activityId、\n userId
+activate ph_ump
+ph_ump -> ph_ump: 券活动详情
+activate ump_voucher_core
+ph_ump -> ump_voucher_core: 判断是否是券包 \n batchSendCoupon or sendCoupon
+ump_voucher_core --> ph_ump: sendResult
+ph_ump -> ph_ump: 持久化发券记录
+ph_ump [#blue]-> TSP: 创建延时任务（for 优惠券临期通知）
+ph_ump -> NSQ: 优惠券发放消息
+NSQ -> DTS: 优惠券发放消息
+DTS -> ph_job: 优惠券发放通知
+activate ph_job #blue
+ph_job [#blue]-> ph_job: 发送微信消息
+ph_ump -> ump_voucher_core: 批量获取同步微信卡包凭证
+ump_voucher_core --> ph_ump: queryResult
+ph_ump -> ph_ump: 组装发放结果、同步卡包凭证
+ph_ump --> ph_front_buyer: result
+ph_front_buyer --> admin: result
+@enduml

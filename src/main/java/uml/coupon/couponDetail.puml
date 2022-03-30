@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor 买家 as admin
+participant ph_front_buyer as ph_front_buyer
+participant ph_customer as ph_customer
+participant shop_center as shop_center
+participant ph_ump as ph_ump
+participant ump_voucher_core as ump_voucher_core
+
+autonumber
+admin -> ph_front_buyer: 查看券包详情
+activate ph_front_buyer
+ph_front_buyer -> ph_customer:activityId\n packet(是否查询券包)
+activate ph_customer
+ph_customer -> shop_center: 获取店铺信息
+shop_center -> ph_customer: result
+ph_customer -> ph_ump: 优惠券详情(如果是券包，并发执行获取)
+ph_ump -> ump_voucher_core: 优惠券详情(包含领取状态、核销码等信息)
+ump_voucher_core --> ph_ump: result
+ph_ump --> ph_customer: result
+ph_customer -> ph_front_buyer: result
+ph_front_buyer -> admin: result
+@enduml

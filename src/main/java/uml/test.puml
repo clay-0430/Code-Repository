@@ -1,0 +1,26 @@
+@startuml
+title   历史领取的红包账号统一刷成一张卷的接口
+
+hive -> nsq:  个人红包权益的数据投递到消息
+
+nsq -> ph_ump: 红包刷成优惠券的接口
+
+ph_ump -> db:  查询优惠券模板
+
+ph_ump -> ph_ump: 如果没有,创建一张优惠券模板（按店铺维度）,保存到数据库
+
+ph_ump -> ph_ump: 基本参数校验
+
+ph_ump -> db: 幂等校验（一个红包账号对应一张卷） 如果已存在，直接返回
+
+ph_ump -> ump_voucher_front: 创建一张等额度，无门槛和长期有效的优惠券(传入唯一id)
+
+ump_voucher_front -> ph_ump:  返回优惠券唯一id
+
+ph_ump-> db: 保存一个红包账号对应一张卷的对应关系
+
+ph_ump-> ump_benfit_center: 红包账号余额清零，余额保存到feature字段里面
+
+ph_ump -> ph_ump: 记录一条数据
+
+@enduml
