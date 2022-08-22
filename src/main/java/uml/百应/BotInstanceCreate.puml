@@ -1,0 +1,29 @@
+@startuml
+title  bot-instace-getQrCode
+
+actor 用户 as admin
+participant by_wechat_bot as by_wechat_bot
+participant by_wechat_bridge as by_wechat_bridge
+participant wechaty_puppet as wechaty_puppet #blue
+autonumber
+activate by_wechat_bot
+activate by_wechat_bridge
+admin -> by_wechat_bot: 扫码登录
+by_wechat_bot -> by_wechat_bridge: ownerId、token
+by_wechat_bridge ->  by_wechat_bridge:  检查本地实例是否存在
+by_wechat_bridge ->  by_wechat_bridge:  检查实例快照
+par
+by_wechat_bridge ->  wechaty_puppet:  createBot(创建bot实例)
+wechaty_puppet -->  by_wechat_bridge: bot
+alt
+by_wechat_bridge ->  by_wechat_bridge :注册本地监听事件 \na、企业微信朋友圈 API \nb、扫码登录 \nc、登录 \nd、正常登出，回收到二维码事件，10分钟推一次 \ne、消息事件 \nf、加群\ng、退群\nh、好友关系
+end
+by_wechat_bridge ->  wechaty_puppet:  start(实例启动)
+wechaty_puppet -->  by_wechat_bridge: true
+by_wechat_bridge ->  by_wechat_bridge: 更改本地实例状态
+by_wechat_bridge ->  by_wechat_bridge: 创建本地缓存
+by_wechat_bridge ->  wechaty_puppet:  注册任务重试器
+by_wechat_bridge --> by_wechat_bot: 创建成功
+by_wechat_bot   --> admin: 登录成功
+end
+@endum

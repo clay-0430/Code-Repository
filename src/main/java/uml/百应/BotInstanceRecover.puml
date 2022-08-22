@@ -1,0 +1,32 @@
+@startuml
+title  bot-instace-recover
+
+participant by_wechat_bot as by_wechat_bot
+participant by_wechat_bridge as by_wechat_bridge
+participant redis as redis
+participant wechaty_puppet as wechaty_puppet #blue
+autonumber
+activate by_wechat_bot
+activate by_wechat_bridge
+activate redis
+activate wechaty_puppet
+by_wechat_bot -> by_wechat_bridge: token实例恢复
+par 按token同步操作实例
+by_wechat_bridge ->  redis:  获取分布式锁 fixpre+token
+redis -->  by_wechat_bridge:  加锁成功
+by_wechat_bridge -> by_wechat_bridge: 获取本地实例
+alt 实例为空
+by_wechat_bridge -> wechaty_puppet : stop远程实例
+wechaty_puppet --> by_wechat_bridge: done
+by_wechat_bridge -> wechaty_puppet : restart远程实例
+wechaty_puppet --> by_wechat_bridge: done
+by_wechat_bridge --> by_wechat_bot : recover成功
+end
+alt 实例不为空
+by_wechat_bridge -> by_wechat_bridge: 获取本地实例快照信息
+by_wechat_bridge -> wechaty_puppet: 按token异步创建实例
+wechaty_puppet -> by_wechat_bridge: done
+by_wechat_bridge --> by_wechat_bot : recover成功
+end
+end
+@endum

@@ -1,0 +1,33 @@
+@startuml
+title  bot-instace-destroy
+
+participant by_wechat_bot as by_wechat_bot
+participant by_wechat_bridge as by_wechat_bridge
+participant wechaty_puppet as wechaty_puppet #blue
+participant ONS as ONS
+participant Redis as Redis
+autonumber
+activate by_wechat_bot
+activate by_wechat_bridge
+activate wechaty_puppet
+activate ONS
+activate Redis
+by_wechat_bot -> by_wechat_bridge: token实例销毁
+by_wechat_bridge ->  by_wechat_bridge:  获取本地实例
+by_wechat_bridge ->  wechaty_puppet:  stop：按token停止远程实例
+alt 远程stop失败
+wechaty_puppet -->  by_wechat_bridge:  false
+by_wechat_bridge --> by_wechat_bot: stop失败
+end
+alt 远程stop成功
+by_wechat_bridge -> ONS: 移除mq消费者
+by_wechat_bridge -> by_wechat_bridge: 移除本地消费者管理记录
+by_wechat_bridge -> by_wechat_bridge: 移除本地需要待恢复的实例缓存
+by_wechat_bridge -> Redis : 移除远程需要待恢复的实例缓存
+by_wechat_bridge -> by_wechat_bridge: 清除本地实例
+by_wechat_bridge -> by_wechat_bridge: 清除二维码缓存
+by_wechat_bridge -> by_wechat_bridge: 清除本地快照
+by_wechat_bridge -> by_wechat_bridge: 清除负载均衡节点
+by_wechat_bridge --> by_wechat_bot: done
+end
+@endum

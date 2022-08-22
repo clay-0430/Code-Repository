@@ -1,0 +1,22 @@
+@startuml
+title  bot-instace-getQrCode
+
+actor 用户 as admin
+participant by_wechat_bot as by_wechat_bot
+participant by_wechat_bridge as by_wechat_bridge
+participant redis as redis
+participant wechaty_puppet as wechaty_puppet #blue
+autonumber
+activate by_wechat_bot
+activate by_wechat_bridge
+admin -> by_wechat_bot: 扫码
+by_wechat_bot -> by_wechat_bridge: 轮询获取二维码(token、companyId)
+by_wechat_bridge ->  redis:  检查本地实例是否存在
+by_wechat_bridge -> wechaty_puppet:实例不存在，异步创建
+by_wechat_bridge -> by_wechat_bridge: 实例存在，获取本地token实例\n管理器类型（现在只有句子）
+by_wechat_bridge -> redis: 获取二维码，并判断是否有效
+by_wechat_bridge ->  by_wechat_bot:  二维码有效，直接返回
+by_wechat_bridge -> wechaty_puppet:二维码失效，异步恢复二维码操作
+by_wechat_bridge --> by_wechat_bot: return null
+by_wechat_bot -> admin: result
+@endum
