@@ -104,6 +104,13 @@
 			<artifactId>spring-retry</artifactId>
 		</dependency>
 
+		<!-- csv文件解析依赖 -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.4</version>
+		</dependency>
+
     </dependencies>
 
 	<build>
