@@ -1,15 +1,57 @@
 package com.wg.demo.calculate.leetcode;
 
+import com.google.common.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 三数之和
+ */
 public class ThreeSum {
 
     public static void main(String[] args) {
         int[] arr = {-1, 0, 1, 2, -1, -4};
         List<List<Integer>> lists = threeSum(arr);
         System.out.println(lists);
+    }
+
+    private static List<List<Integer>> threeSum1(int[] arr) {
+
+        Arrays.sort(arr);
+        List<List<Integer>> res = Lists.newArrayList();
+
+        for (int i = 0; i < arr.length; i++) {
+            if(arr[i] == arr[i+1]){
+                continue;
+            }
+            int left = i + 1, right = arr.length - 1;
+            while (left<right) {
+                if (arr[i] == arr[left]) {
+                    left++;
+                    continue;
+                }
+                if (arr[i]==arr[right]){
+                    right--;
+                    continue;
+                }
+                int sum = arr[i] + arr[left] + arr[right];
+                if (sum<0){
+                    left++;
+                }else if (sum>0){
+                    right--;
+                }else {
+                    List<Integer> tempList = new ArrayList();
+                    tempList.add(arr[i]);
+                    tempList.add(arr[left]);
+                    tempList.add(arr[right]);
+                    res.add(tempList);
+                    left++;
+                }
+            }
+        }
+        return res;
     }
 
     public static List<List<Integer>> threeSum(int[] nums) {

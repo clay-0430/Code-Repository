@@ -4,11 +4,24 @@ public class MaxProfit {
 
     public static void main(String[] args) {
         int[] prices = {7, 1, 5, 3, 6, 4};
-        int i = maxProfit(prices);
+        int i = maxProfit1(prices);
         System.out.println(i);
     }
 
-    private static int maxProfit(int[] prices) {
+    public static int maxProfit1(int[] prices) {
+
+        int minPrice = prices[0];
+        int maxProfit = Integer.MIN_VALUE;
+        for (int i = 0; i < prices.length; i++) {
+            minPrice = Math.min(minPrice, prices[i]);
+            maxProfit = Math.max(maxProfit, prices[i] - minPrice);
+        }
+
+        return maxProfit;
+
+    }
+
+    private static int maxProfit2(int[] prices) {
 
         int len = prices.length;
 
