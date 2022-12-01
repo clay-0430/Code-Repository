@@ -1,9 +1,8 @@
 package com.wg.demo.thread;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import org.springframework.util.StopWatch;
+
+import java.util.concurrent.*;
 import java.util.stream.Stream;
 
 /**
@@ -12,16 +11,26 @@ import java.util.stream.Stream;
  */
 public class CountdownLatchExample {
 
-    public static void main(String[] args) {
-        final int totalThread = 10;
-        CountDownLatch countDownLatch = new CountDownLatch(totalThread);
+    public static void main(String[] args) throws InterruptedException {
+//        final int totalThread = 10;
+        int count = 10;
+        CountDownLatch countDownLatch = new CountDownLatch(count);
         ExecutorService executorService = Executors.newCachedThreadPool();
-        for (int i = 0; i < totalThread; i++) {
+        StopWatch watch = new StopWatch();
+        watch.start();
+        for (int i = 0; i < count; i++) {
             executorService.execute(() -> {
-                System.out.println("run..");
+                try {
+                    Thread.sleep(1000);
+                    System.out.println("等待1s");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                countDownLatch.countDown();
             });
         }
-        System.out.println("end");
-//        executorService.shutdown();
+        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        watch.stop();
+        System.out.println(watch.getTotalTimeMillis());
     }
 }

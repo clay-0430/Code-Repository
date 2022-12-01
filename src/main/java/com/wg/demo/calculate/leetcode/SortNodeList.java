@@ -24,7 +24,7 @@ public class SortNodeList {
         ListNode dummyNode = new ListNode(0);
         ListNode res = dummyNode;
 
-        while (head1 != null || head2 != null) {
+        while (head1 != null && head2 != null) {
             if (head1.val < head2.val) {
                 dummyNode.next = head1;
                 head1 = head1.next;
