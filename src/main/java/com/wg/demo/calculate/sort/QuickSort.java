@@ -23,16 +23,15 @@ public class QuickSort {
 
         swap(arr, right, left + new Random().nextInt(right - left));
 
-        int pivot = right;
         int pointer = left;
 
 
         for (int i = left; i < right; i++) {
-            if (arr[i] <= arr[pivot]) {
+            if (arr[i] <= arr[right]) {
                 swap(arr, i, pointer++);
             }
         }
-        swap(arr, pointer, pivot);
+        swap(arr, pointer, right);
         return pointer;
     }
 

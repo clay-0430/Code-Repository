@@ -18,10 +18,9 @@ public class StringisValid {
         for (int i = 0; i < length; i++) {
             Character c = s.charAt(i);
             if (pairs.containsKey(c)) {
-                if (stack.isEmpty() || stack.peek() != pairs.get(c)) {
+                if (stack.isEmpty() || stack.pop() != pairs.get(c)) {
                     return false;
                 }
-                stack.pop();
             } else {
                 stack.push(c);
             }
@@ -65,7 +64,7 @@ public class StringisValid {
     }
 
     public static void main(String[] args) {
-        boolean valid = isValid1("()");
+        boolean valid = isValid1("(){}[]");
         System.out.println(valid);
     }
 

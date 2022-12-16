@@ -18,42 +18,53 @@ public class ReorderList {
     //归并排序-递归
     //时间复杂度O(nlogn)，空间复杂度O(logn)，其中n是链表的长度。空间复杂度主要取决于递归调用的栈空间。
     //经典归并，许多题用到这个模板。
-    public ListNode sortList(ListNode head) {
-        return mergeSort(head);
+    public void reorderList(ListNode head) {
+        if (head == null) {
+            return;
+        }
+        ListNode mid = middleNode(head);
+        ListNode l1 = head;
+        ListNode l2 = mid.next;
+        mid.next = null;
+        l2 = reverseList(l2);
+        mergeList(l1, l2);
     }
 
-    private ListNode mergeSort(ListNode head) {
-        if (head == null || head.next == null)//这个条件哪来的，我的想法是不能让fast.next为空
-            return head;
-        ListNode fast = head, slow = head;
-        //偶数个节点找到中心左边的节点，好让slow.next=null，分成两段链表
-        //记住这个判断条件，偶数结点会找靠左结点，奇数就是中间节点，能用到很多题上
+    public ListNode middleNode(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
         while (fast.next != null && fast.next.next != null) {
             slow = slow.next;
             fast = fast.next.next;
         }
-        ListNode next = slow.next;
-        slow.next = null;
-        ListNode left = mergeSort(head);
-        ListNode right = mergeSort(next);
-        return merge(left, right);
+        return slow;
     }
 
-    private ListNode merge(ListNode left, ListNode right) {  //两个链表merge模板，用到的地方也很多
-        ListNode dummy = new ListNode(0);
-        ListNode cur = dummy;
-        while (left != null && right != null) {
-            if (left.val > right.val) {
-                cur.next = right;
-                right = right.next;
-            } else {
-                cur.next = left;
-                left = left.next;
-            }
-            cur = cur.next;
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode nextTemp = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = nextTemp;
         }
-        cur.next = left != null ? left : right;
-        return dummy.next;
+        return prev;
+    }
+
+    public void mergeList(ListNode l1, ListNode l2) {
+        ListNode l1_tmp;
+        ListNode l2_tmp;
+        while (l1 != null && l2 != null) {
+            l1_tmp = l1.next;
+            l2_tmp = l2.next;
+
+            l1.next = l2;
+            l1 = l1_tmp;
+
+            l2.next = l1;
+            l2 = l2_tmp;
+        }
     }
 
 
