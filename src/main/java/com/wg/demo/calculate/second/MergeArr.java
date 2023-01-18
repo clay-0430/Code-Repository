@@ -16,9 +16,9 @@ public class MergeArr {
             return new int[0][2];
         }
 
-        Arrays.sort(intervals, Comparator.comparingInt(v -> v[0]));
+        Arrays.sort(intervals, (a, b) -> (a[0] - b[0]));
         List<int[]> merged = new ArrayList<>();
-        for (int[] interval: intervals) {
+        for (int[] interval : intervals) {
             // 如果列表为空,或者当前区间与上一区间不重合,直接添加
             if (merged.size() == 0 || merged.get(merged.size() - 1)[1] < interval[0]) {
                 merged.add(interval);

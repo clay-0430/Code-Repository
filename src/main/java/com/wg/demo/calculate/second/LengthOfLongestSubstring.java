@@ -1,5 +1,7 @@
 package com.wg.demo.calculate.second;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +11,7 @@ import java.util.Map;
 public class LengthOfLongestSubstring {
 
     public static void main(String[] args) {
-        String str = "bbbbb";
+        String str = "pwwkew";
 
         System.out.println(lengthOfLongestSubstring(str));
     }
